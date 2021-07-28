@@ -1,0 +1,13 @@
+<%- include('../partials/head')%>
+
+<%- include('../partials/navbar')%>
+
+<h1>Item id: <%= item.id %></h1>
+<h2>Item name: <%= item.name %></h2>
+<h3>Item text: <%= item.text %></h3>
+<a href="/crud/<%= item.id %>/edit">Edit</a>
+<a href="/crud">Back to Index</a>
+<form method="POST" action="/crud/<%= item.id %>?_method=DELETE">
+	<button>DELETE</button>
+</form>
+<%- include('../partials/foot')%>

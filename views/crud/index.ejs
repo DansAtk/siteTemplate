@@ -1,0 +1,15 @@
+<%- include('../partials/head')%>
+
+<%- include('../partials/navbar')%>
+
+<h1>CRUD</h1>
+
+<ul>
+	<% for(let c of data) {%>
+	<li><%=c.name%></li>
+	<a href="/crud/<%=c.id%>">Details</a>
+	<% }%>
+</ul>
+<a href="/crud/new">New Crud</a>
+
+<%- include('../partials/foot')%>
