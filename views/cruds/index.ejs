@@ -1,0 +1,23 @@
+<%- include('../partials/head')%>
+
+	<%- include('../partials/navbar')%>
+
+		<h1>
+			<%=type%> Cruds
+		</h1>
+
+		<ul>
+			<% for(let c of cruds) {%>
+				<li>
+					<a href="/cruds/<%=c._id%>">
+						<%=c.name%>
+					</a>
+				</li>
+				<% }%>
+		</ul>
+		<a href="/cruds/new">New Crud</a>
+		<%if(type !=='All' ) {%>
+			<a href="/cruds">All Cruds</a>
+			<%}%>
+
+				<%- include('../partials/foot')%>

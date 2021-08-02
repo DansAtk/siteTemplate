@@ -1,0 +1,34 @@
+<%- include('../partials/head')%>
+
+	<%- include('../partials/navbar')%>
+
+		<h1>Edit Crud</h1>
+		<form action="/cruds/<%=item._id%>?_method=PUT" method="post">
+			<section>
+				<label for="name">NAME</label>
+				<br>
+				<input type="text" name="name" id="name" value="<%=item.name%>">
+			</section>
+			<section>
+				<label for="text">TEXT</label>
+				<br>
+				<textarea name="text" id="text" cols="30" rows="5">
+			<%= item.text %>
+		</textarea>
+			</section>
+			<section>
+				<label for="type">TYPE</label>
+				<br>
+				<select name="type" id="type">
+					<% for(let type of crudTypes){%>
+						<option value="<%=type%>" <%=item.type===type ? 'selected' : '' %>>
+							<%=type%>
+						</option>
+						<%}%>
+				</select>
+			</section>
+			<button>Update</button>
+		</form>
+		<a href="/cruds/<%=item._id%>">Cancel</a>
+
+		<%- include('../partials/foot')%>

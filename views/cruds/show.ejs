@@ -1,0 +1,26 @@
+<%- include('../partials/head')%>
+
+	<%- include('../partials/navbar')%>
+
+		<h1>Item name: <%= item.name %>
+		</h1>
+		<ul>
+			<li>
+				ID: <%= item._id %>
+			</li>
+			<li>
+				Text: <%= item.text %>
+			</li>
+			<li>
+				Type: <a href="/cruds?type=<%= item.type %>">
+					<%= item.type %>
+				</a>
+			</li>
+		</ul>
+		<a href="/cruds/<%= item._id %>/edit">Edit Text</a>
+		<a href="/cruds/<%= item._id %>/editall">Edit All</a>
+		<a href="/cruds">Back to Index</a>
+		<form method="POST" action="/cruds/<%= item.id %>?_method=DELETE">
+			<button>DELETE</button>
+		</form>
+		<%- include('../partials/foot')%>

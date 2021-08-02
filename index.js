@@ -1,45 +1,29 @@
 const express = require('express');
-const { v4: uuid } = require('uuid');
 const methodOverride = require('method-override');
 const app = express();
-uuid();
 const path = require('path');
+const mongoose = require('mongoose');
+
+const Crud = require('./models/Crud');
+
+mongoose.connect('mongodb://localhost:27017/defaultApp', { useNewUrlParser: true, useUnifiedTopology: true })
+	.then(() => {
+		console.log("MONGO CONNECTION OPEN!");
+	})
+	.catch(err => {
+		console.log("OH NO MONGO ERROR!");
+		console.log(err);
+	});
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 //app.use(express.json());
 app.use(methodOverride('_method'));
 
+const crudTypes = ['a', 'b', 'c'];
+
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, '/views'));
-
-let data = [
-	{
-		id: uuid(),
-		name: "crud1",
-		text: "A"
-	},
-	{
-		id: uuid(),
-		name: "crud2",
-		text: "B"
-	},
-	{
-		id: uuid(),
-		name: "crud3",
-		text: "C"
-	},
-	{
-		id: uuid(),
-		name: "crud4",
-		text: "D"
-	},
-	{
-		id: uuid(),
-		name: "crud5",
-		text: "E"
-	}
-]
 
 app.get('/', (req, res) => {
 	res.render('home');
@@ -49,51 +33,72 @@ app.post('/', (req, res) => {
 	res.send("POST RESPONSE");
 });
 
-//INDEX
-app.get('/crud', (req, res) => {
-	res.render('crud/index', { data });
+//MONGO INDEX
+app.get('/cruds', async (req, res) => {
+	const { type } = req.query;
+	if (type) {
+		const cruds = await Crud.find({ type });
+		res.render('cruds/index', { cruds, type });
+	} else {
+		const cruds = await Crud.find({});
+		res.render('cruds/index', { cruds, type: 'All' });
+	};
 });
 
-//NEW
-app.get('/crud/new', (req, res) => {
-	res.render('crud/new');
+//MONGO NEW
+app.get('/cruds/new', (req, res) => {
+	res.render('cruds/new', { crudTypes });
 });
 
-//CREATE
-app.post('/crud/', (req, res) => {
-	const { name, text } = req.body;
-	data.push( { id: uuid(), name, text } );
-	res.redirect('/crud');
+//MONGO CREATE
+app.post('/cruds/', async (req, res) => {
+	//const { name, text, type } = req.body;
+	const newCrud = new Crud(req.body);
+	await newCrud.save();
+	res.redirect(`/cruds/${newCrud._id}`);
 });
 
-//SHOW
-app.get('/crud/:id', (req, res) => {
+//MONGO SHOW
+app.get('/cruds/:id', async (req, res) => {
 	const { id } = req.params;
-	const item = data.find(c => c.id === id);
-	res.render('crud/show', { item });
+	const item = await Crud.findById(id);
+	res.render('cruds/show', { item });
 });
 
-//EDIT
-app.get('/crud/:id/edit', (req, res) => {
+//MONGO EDIT (JUST TEXT)
+app.get('/cruds/:id/edit', async (req, res) => {
 	const { id } = req.params;
-	const item = data.find(c => c.id === id);
-	res.render('crud/edit', { item });
+	const item = await Crud.findById(id);
+	res.render('cruds/edit', { item });
 });
 
-//UPDATE
-app.patch('/crud/:id', (req, res) => {
+//MONGO EDIT (ALL)
+app.get('/cruds/:id/editall', async (req, res) => {
+	const { id } = req.params;
+	const item = await Crud.findById(id);
+	res.render('cruds/editall', { item, crudTypes });
+});
+
+//MONGO UPDATE (JUST TEXT)
+app.patch('/cruds/:id', async (req, res) => {
 	const { id } = req.params;
 	const newText = req.body.text;
-	const item = data.find(c => c.id === id);
-	item.text = newText;
-	res.redirect('/crud');
+	const item = await Crud.findByIdAndUpdate(id, { text: newText }, { runValidators: true, new: true });
+	res.redirect(`/cruds/${item._id}`);
 });
 
-//DESTROY
-app.delete('/crud/:id', (req, res) => {
+//MONGO UPDATE (ALL)
+app.put('/cruds/:id', async (req, res) => {
 	const { id } = req.params;
-	data = data.filter(c => c.id !== id);
-	res.redirect('/crud');
+	const item = await Crud.findByIdAndUpdate(id, req.body, { runValidators: true, new: true });
+	res.redirect(`/cruds/${item._id}`);
+});
+
+//MONGO DESTROY
+app.delete('/cruds/:id', async (req, res) => {
+	const { id } = req.params;
+	await Crud.findByIdAndDelete(id);
+	res.redirect('/cruds');
 });
 
 app.get('*', (req, res) => {

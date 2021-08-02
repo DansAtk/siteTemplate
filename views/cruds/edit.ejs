@@ -1,0 +1,18 @@
+<%- include('../partials/head')%>
+
+	<%- include('../partials/navbar')%>
+
+		<h1>Edit Crud Text</h1>
+		<form action="/cruds/<%=item._id%>?_method=PATCH" method="post">
+			<section>
+				<label for="text">Crud Text:</label>
+				<br>
+				<textarea name="text" id="text" cols="30" rows="5">
+			<%= item.text %>
+		</textarea>
+			</section>
+			<button>Update</button>
+		</form>
+		<a href="/cruds/<%=item._id%>">Cancel</a>
+
+		<%- include('../partials/foot')%>
